@@ -1,5 +1,6 @@
 let myLibrary = []
 
+
 function Book(title, author, pages, read) {
     this.title = title
     this.author = author
@@ -12,62 +13,42 @@ function addBookToLibrary() {
     const author = document.getElementById('author').value
     const pages = document.getElementById('pages').value
     const read = document.getElementById('read')
-    let haveRead
-    if(read.checked) {
-        haveRead = "read"
-    } else {
-        haveRead = "not read"
-    }
-    const newBook = new Book(title, author, pages, haveRead)
+    
+    const newBook = new Book(title, author, pages, read)
     myLibrary.push(newBook)
 }
 
 function displayBooks() {
     const book = document.querySelector('#books')
-    myLibrary.forEach(myLibrary => {
+    const copyOfLibrary = myLibrary
+    myLibrary.forEach((myLibrary, index) => {
         console.table(myLibrary)
         const card = document.createElement('div')
         card.classList.add('card')
+        card.dataset.index = index
         book.appendChild(card)
         for (let key in myLibrary) {
-            console.log(`${key}: ${myLibrary[key]}`)
             const para = document.createElement('p')
+            para.classList.add('info')
             para.textContent = (`${key}: ${myLibrary[key]}`)
             card.appendChild(para)
         }
+
+        
         const deleteBook = document.createElement('button')
         deleteBook.textContent = 'delete book'
         deleteBook.classList.add('delete')
         card.appendChild(deleteBook)
-    
+        deleteBook.addEventListener('click', () =>{
+            let parent = document.getElementById("books")
+            let child = parent.getElementsByClassName("card")[index]
+            parent.removeChild(child)
+            copyOfLibrary.splice(index, 1)
+        })
+        
+        
     });
 }
-
-function removeBook(index) {
-
-    const remove = document.addEventListener()
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -97,7 +78,7 @@ window.onclick = function(event) {
 }
 SUBMIT.onclick = function() {
     modal.style.display = "none"
+    document.getElementById('books').textContent = ''
     addBookToLibrary()
     displayBooks()
-    console.table(myLibrary)
 }
