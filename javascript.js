@@ -1,28 +1,34 @@
 let myLibrary = []
 
 
-function Book(title, author, pages, read) {
+function Book(title, author, pages) {
     this.title = title
     this.author = author
     this.pages = pages
-    this.read = read
     }
 
 function addBookToLibrary() {
     const title = document.getElementById('title').value
     const author = document.getElementById('author').value
     const pages = document.getElementById('pages').value
-    const read = document.getElementById('read')
     
-    const newBook = new Book(title, author, pages, read)
+    
+    const newBook = new Book(title, author, pages)
     myLibrary.push(newBook)
 }
 
 function displayBooks() {
+    let didRead = ''
+    const read = document.getElementById('read')
+    if(read.checked === true) {
+        didRead = 'read'
+    } else {
+        didRead = 'notRead'
+        }
     const book = document.querySelector('#books')
     const copyOfLibrary = myLibrary
+
     myLibrary.forEach((myLibrary, index) => {
-        console.table(myLibrary)
         const card = document.createElement('div')
         card.classList.add('card')
         card.dataset.index = index
@@ -34,7 +40,23 @@ function displayBooks() {
             card.appendChild(para)
         }
 
-        
+        //Displays the read button and can be toggled between the read and not read 
+        const readBtn = document.createElement('button')
+        if(didRead == 'read') {
+            readBtn.textContent = 'read'
+        } else {
+            readBtn.textContent = 'not read'
+        }
+        readBtn.classList.add('readOrNot')
+        card.appendChild(readBtn)
+        readBtn.addEventListener('click', () => {
+            if(readBtn.textContent == 'read'){
+                readBtn.textContent = 'not read'
+            } else {
+                readBtn.textContent = 'read'
+            }
+        })
+
         const deleteBook = document.createElement('button')
         deleteBook.textContent = 'delete book'
         deleteBook.classList.add('delete')
@@ -45,10 +67,10 @@ function displayBooks() {
             parent.removeChild(child)
             copyOfLibrary.splice(index, 1)
         })
-        
-        
     });
 }
+
+
 
 
 
