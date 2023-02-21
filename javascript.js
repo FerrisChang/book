@@ -1,93 +1,107 @@
 let myLibrary = []
+let newBook;
 
-
-function Book(title, author, pages) {
-    this.title = title
-    this.author = author
-    this.pages = pages
+class Book{
+    constructor(title, author, pages, read) {
+        this.title = title
+        this.author = author
+        this.pages = pages
+        this.read = read
     }
+}
 
 function addBookToLibrary() {
+    event.preventDefault();
     const title = document.getElementById('title').value
     const author = document.getElementById('author').value
     const pages = document.getElementById('pages').value
-    
-    
-    const newBook = new Book(title, author, pages)
+    const read = document.getElementById('read').checked
+    newBook = new Book(title, author, pages, read);
     myLibrary.push(newBook)
+    storeData()
+    displayCard()
 }
 
-function displayBooks() {
-    let didRead = ''
-    const read = document.getElementById('read')
-    if(read.checked === true) {
-        didRead = 'read'
-    } else {
-        didRead = 'notRead'
-        }
-    const book = document.querySelector('#books')
-    const copyOfLibrary = myLibrary
+function displayCard() {
+    const library = document.getElementById('books')
+    const book = document.querySelectorAll('.book')
+    book.forEach(books => library.removeChild(books))
+    for(let i = 0; i < myLibrary.length; i++) {
+        makeBookCard(myLibrary[i])
+    }
+}
 
-    myLibrary.forEach((myLibrary, index) => {
-        const card = document.createElement('div')
-        card.classList.add('card')
-        card.dataset.index = index
-        book.appendChild(card)
-        for (let key in myLibrary) {
-            const para = document.createElement('p')
-            para.classList.add('info')
-            para.textContent = (`${key}: ${myLibrary[key]}`)
-            card.appendChild(para)
-        }
+function makeBookCard(bookInfo){
+    const library = document.getElementById('books')
+    const bookContainer = document.createElement('div')
+    const titlePara = document.createElement('p');
+    const authorPara = document.createElement('p');
+    const pagePara = document.createElement('p');
+    const deleteBook = document.createElement('button');
+    const readButton = document.createElement('button');
 
-        //Displays the read button and can be toggled between the read and not read 
-        const readBtn = document.createElement('button')
-        if(didRead == 'read') {
-            readBtn.textContent = 'read'
-        } else {
-            readBtn.textContent = 'not read'
-        }
-        readBtn.classList.add('readOrNot')
-        card.appendChild(readBtn)
-        readBtn.addEventListener('click', () => {
-            if(readBtn.textContent == 'read'){
-                readBtn.textContent = 'not read'
-            } else {
-                readBtn.textContent = 'read'
-            }
-        })
+    bookContainer.classList.add('book');
+    bookContainer.setAttribute('id', myLibrary.indexOf(bookInfo));
 
-        const deleteBook = document.createElement('button')
-        deleteBook.textContent = 'delete book'
-        deleteBook.classList.add('delete')
-        card.appendChild(deleteBook)
-        deleteBook.addEventListener('click', () =>{
-            let parent = document.getElementById("books")
-            let child = parent.getElementsByClassName("card")[index]
-            parent.removeChild(child)
-            copyOfLibrary.splice(index, 1)
-        })
+    titlePara.textContent = bookInfo.title;
+    titlePara.classList.add('title');
+    bookContainer.appendChild(titlePara);
+
+    authorPara.textContent = bookInfo.author;
+    authorPara.classList.add('author');
+    bookContainer.appendChild(authorPara);
+
+    pagePara.textContent = bookInfo.pages;
+    pagePara.classList.add('pages');
+    bookContainer.appendChild(pagePara);
+
+    readButton.classList.add('readButton')    
+    bookContainer.appendChild(readButton);
+    (bookInfo.read===false) ? readButton.textContent = 'Not Read' : readButton.textContent = 'Read'
+    readButton.addEventListener('click', () => { 
+        bookInfo.read = !bookInfo.read; 
+        storeData()
+        displayCard()
+        
+    }); 
+
+    deleteBook.textContent = 'delete book';
+    deleteBook.classList.add('deleteBook');
+    bookContainer.appendChild(deleteBook);
+    deleteBook.addEventListener('click', () => {
+        myLibrary.splice(myLibrary.indexOf(bookInfo, 1));
+        storeData()
+        displayCard()
     });
+
+    library.appendChild(bookContainer);
 }
 
 
+function storeData() {
+    localStorage.setItem(`myLibrary`, JSON.stringify(myLibrary));
+}
 
+function refresh() {
+    if(!localStorage.myLibrary) {
+        displayCard();
+    }else {
+        let objects = localStorage.getItem('myLibrary') 
+        objects = JSON.parse(objects);
+        myLibrary = objects;
+        displayCard();
+    }
+}
 
-
-
-
-
-
-
-
+refresh();
 
 
 //Modal to add book to the content box
 const modal = document.getElementById("myModal")
-const btn = document.getElementById("addBook")
+const addBtn = document.getElementById("addBook")
 const span = document.getElementsByClassName("close")[0]
 const SUBMIT = document.getElementById('submit')
-btn.onclick = function() {
+addBtn.onclick = function() {
     modal.style.display = "block"
 }
 span.onclick = function() {
@@ -100,7 +114,5 @@ window.onclick = function(event) {
 }
 SUBMIT.onclick = function() {
     modal.style.display = "none"
-    document.getElementById('books').textContent = ''
     addBookToLibrary()
-    displayBooks()
 }

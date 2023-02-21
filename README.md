@@ -9,3 +9,5 @@
             leftToDo: 3) Add a button on each book’s display to remove the book from the library.
                       4) Add a button on each book’s display to change its read status
 12FEB2023 - Completed Delete Button add and functionality to remove book from DOM and array
+
+20FEB2023 - Changed to the script to class and added localStorage
